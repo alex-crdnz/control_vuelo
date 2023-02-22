@@ -5,6 +5,7 @@ from models.user import User
 from models.asiento import Asiento
 from models.reservacion import Reservacion
 from models.vuelo import Vuelo
+from models.avion import Avion
 
 def run():
     pass
