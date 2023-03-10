@@ -12,8 +12,7 @@ class Avion(db.Model):
     created = db.Column(db.DateTime, nullable=False)
 
 
-    def __init__(self, modelo, status, configuracion_asientos, created):
+    def __init__(self, modelo, configuracion_asientos, created):
         self.modelo = modelo,
-        self.status = status,
         self.configuracion_asientos = configuracion_asientos,
         self.created = created

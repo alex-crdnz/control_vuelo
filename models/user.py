@@ -11,7 +11,7 @@ class User(db.Model):
     password = db.Column(db.String(70), nullable=False)
     name = db.Column(db.String(70), nullable=False)
     last_name = db.Column(db.String(70), nullable=False)
-    status = db.Column(db.Boolean, nullable=False)
+    status = db.Column(db.Integer, nullable=False)
     created = db.Column(db.DateTime, nullable=False)
 
 

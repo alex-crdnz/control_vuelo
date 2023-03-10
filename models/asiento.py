@@ -13,14 +13,14 @@ class Asiento(db.Model):
     ventana = db.Column(db.String(30), nullable=False)
     pasillo = db.Column(db.String(30), nullable=False)
     clase = db.Column(db.String(30), nullable=False)
-    disponible = db.Column(db.Boolean, nullable=True)
+    disponible = db.Column(db.Integer, nullable=True)
     costo_base = db.Column(db.String(30), nullable=False)
     created = db.Column(db.DateTime, nullable=False)
     
 
 
 
-    def __init__(self, id_vuelo, clave_reservacion, clave_asiento, ventana, pasillo, clase, disponible, costo, created):
+    def __init__(self, id_vuelo, clave_reservacion, clave_asiento, ventana, pasillo, clase, disponible, costo_base, created):
         self.id_vuelo = id_vuelo,
         self.clave_reservacion = clave_reservacion,
         self.clave_asiento = clave_asiento,
@@ -28,5 +28,5 @@ class Asiento(db.Model):
         self.pasillo = pasillo,
         self.clase = clase,
         self.disponible = disponible,
-        self.costo = costo,
+        self.costo_base = costo_base,
         self.created = created
