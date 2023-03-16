@@ -35,35 +35,52 @@ class Vuelo(Resource):
                 conf_asiento = avion_service.get_avion_by_id(vuelo["id_avion"]).configuracion_asientos
                 asiento_service.add_asiento_vuelo(json.loads(conf_asiento), vuelo["vuelo_id"])
             else:
-                return {
-                "body":vuelo
-            },400
+                return vuelo, 400
             return {
-                "body":vuelo
-            },200
+                "id":vuelo["vuelo_id"],
+                "message":vuelo["message"]
+            }, 200
         except Exception as e:
             return {
-                "body":"Bad Request"
+                "message":"Bad Request"
             },400
         
-@ns.route("<clave_vuelo>", methods=["get",])
+@ns.route("<id>", methods=["get",])
 class GetVuelo(Resource):
-    def get(self, clave_vuelo):
+    def get(self, id):
         try:
-            response = vuelo_service.get_vuelo_by_clave(clave_vuelo)
+            response = vuelo_service.get_vuelo_by_id(id)
             if(response):
                 return{
-                    "body":{
-                        "id":response.id,
-                        "id_avion":response.id_avion,
-                        "clave_vuelo":clave_vuelo,
-                        "origen":response.origen,
-                        "destino":response.destino,
-                        "fecha_salida":datetime.strftime(response.fecha_salida, "%Y-%m-%d %H:%M:%S"),
-                        "fecha_llegada":datetime.strftime(response.fecha_llegada, "%Y-%m-%d %H:%M:%S"),
-                        "costo_base":response.costo_base,
-                        "created":datetime.strftime(response.created, "%Y-%m-%d %H:%M:%S")
-                    }
+                    "id":response.id,
+                    "id_avion":response.id_avion,
+                    "clave_vuelo":response.clave_vuelo,
+                    "origen":response.origen,
+                    "destino":response.destino,
+                    "fecha_salida":datetime.strftime(response.fecha_salida, "%Y-%m-%d %H:%M:%S"),
+                    "fecha_llegada":datetime.strftime(response.fecha_llegada, "%Y-%m-%d %H:%M:%S"),
+                    "costo_base":response.costo_base,
+                    "created":datetime.strftime(response.created, "%Y-%m-%d %H:%M:%S")
+                }, 200
+            else:
+                return{
+                    "body":"Not Found"
+                },404
+        except Exception as e:
+            print(e)
+            return{
+                "body":"Bad Request"
+            },400
+
+@ns.route("<id>", methods=["delete",])
+class GetVuelo(Resource):
+    def delete(self, id):
+        try:
+            response = vuelo_service.del_vuelo_by_id(id)
+            if(response):
+                return{
+                    "id":id,
+                    "message":"vuelo eliminado correctamente"
                 }, 200
             else:
                 return{

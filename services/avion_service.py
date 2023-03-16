@@ -30,8 +30,8 @@ class AvionService:
             db.session.rollback()
             return {"message":"Ha ocurrido un error al crear el avion"}
         return {
-            "message":"avion creado correctamente",
-            "avion_id":result.id,
+            "id":result.id,
+            "message":"avion creado correctamente"
         }
 
     def get_avion_by_id(self, id):

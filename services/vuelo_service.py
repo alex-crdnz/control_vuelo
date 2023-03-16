@@ -2,9 +2,11 @@ import sys
 sys.path.append("..")
 from context import db
 from models.vuelo import Vuelo
+from services.asiento_service import AsientoService
 from datetime import datetime
 from services.avion_service import AvionService
 
+asiento_service = AsientoService()
 class VueloService:
     def add_vuelo(self, payload):
         """Agrega vuelo a la tabla vuelo
@@ -59,5 +61,24 @@ class VueloService:
             result = Vuelo.query.filter_by(clave_vuelo=clave_vuelo).first()
         except Exception as e:
             print("mysql error(vuelo_service/get_vuelo_by_clave()): "+str(e))
+            db.session.rollback()
+        return result if result is not None else False
+    
+    def del_vuelo_by_id(self, id):
+        """consulta la tabla avion por id
+
+        Args:
+            vuelo (string): clave_vuelo del vuelo
+
+        Returns:
+            Object: Avion
+        """            
+        try:
+            asiento_service.del_asiento_by_id(id)
+            result = Vuelo.query.filter_by(id=id).first()
+            db.session.delete(result)
+            db.session.commit()
+        except Exception as e:
+            print("mysql error(vuelo_service/delete_vuelo_by_id()): "+str(e))
             db.session.rollback()
         return result if result is not None else False

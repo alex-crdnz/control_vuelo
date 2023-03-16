@@ -33,12 +33,10 @@ class Avion(Resource):
     @api.expect(avion_field)
     def post(self):
         try:
-            return {
-                "body":avion_service.add_avion(request.json)
-            },200
+            return avion_service.add_avion(request.json), 200
         except Exception as e:
             return {
-                "body":"Bad Request"
+                "message":"Bad Request"
             },400
         
 @ns.route("<id>", methods=["get",])
@@ -48,12 +46,10 @@ class GetAvion(Resource):
             response = avion_service.get_avion_by_id(id)
             if(response):
                 return{
-                    "body":{
-                        "id":response.id,
-                        "modelo":response.modelo,
-                        "configuracion_asientos":json.loads(response.configuracion_asientos),
-                        "created":datetime.strftime(response.created, "%Y-%m-%d %H:%M:%S")
-                    }
+                    "id":response.id,
+                    "modelo":response.modelo,
+                    "configuracion_asientos":json.loads(response.configuracion_asientos),
+                    "created":datetime.strftime(response.created, "%Y-%m-%d %H:%M:%S")
                 }, 200
             else:
                 return{

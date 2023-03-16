@@ -2,6 +2,7 @@ import sys
 sys.path.append("..")
 from context import db
 from models.asiento import Asiento
+from models.reservacion import Reservacion
 from datetime import datetime
 from services.avion_service import AvionService
 import json
@@ -84,6 +85,25 @@ class AsientoService:
         """            
         try:
             result = Asiento.query.filter_by(id_vuelo=id_vuelo).all()
+        except Exception as e:
+            print("mysql error(asiento_service/get_asiento_by_id()): "+str(e))
+            db.session.rollback()
+        return result if result is not None else False
+    
+    def del_asiento_by_id(self, id_vuelo):
+        """consulta la tabla asiento por vuelo_id
+
+        Args:
+            vuelo (int): id del vuelo
+
+        Returns:
+            Object: Asiento
+        """            
+        try:
+            result = Asiento.query.filter_by(id_vuelo=id_vuelo).all()
+            for asiento in result:
+                db.session.delete(asiento)
+                db.session.commit()
         except Exception as e:
             print("mysql error(asiento_service/get_asiento_by_id()): "+str(e))
             db.session.rollback()
