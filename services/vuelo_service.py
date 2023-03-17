@@ -93,7 +93,7 @@ class VueloService:
             Object: Avion
         """            
         try:
-            result = Vuelo.query.filter_by(origen=origen, destino=destino).first()
+            result = Vuelo.query.filter_by(origen=origen, destino=destino).all()
         except Exception as e:
             print("mysql error(vuelo_service/get_vuelo_by_clave()): "+str(e))
             db.session.rollback()

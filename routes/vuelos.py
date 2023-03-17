@@ -45,24 +45,27 @@ class Vuelo(Resource):
                 "message":"Bad Request"
             },400
         
-@ns.route("<origen><destino>", methods=["get"])
+@ns.route("/<origen>/<destino>", methods=["get"])
 class GetVuelo(Resource):
     def get(self, origen, destino):
         try:
             print(origen)
-            response = vuelo_service.get_vuelo_by_origen_destino(origen, origen)
+            response = vuelo_service.get_vuelo_by_origen_destino(origen, destino)
             if(response):
-                return{
-                    "id":response.id,
-                    "id_avion":response.id_avion,
-                    "clave_vuelo":response.clave_vuelo,
-                    "origen":response.origen,
-                    "destino":response.destino,
-                    "fecha_salida":datetime.strftime(response.fecha_salida, "%Y-%m-%d %H:%M:%S"),
-                    "fecha_llegada":datetime.strftime(response.fecha_llegada, "%Y-%m-%d %H:%M:%S"),
-                    "costo_base":response.costo_base,
-                    "created":datetime.strftime(response.created, "%Y-%m-%d %H:%M:%S")
-                }, 200
+                result = []
+                for vuelo in response:
+                    result.append({
+                        "id":vuelo.id,
+                        "id_avion":vuelo.id_avion,
+                        "clave_vuelo":vuelo.clave_vuelo,
+                        "origen":vuelo.origen,
+                        "destino":vuelo.destino,
+                        "fecha_salida":datetime.strftime(vuelo.fecha_salida, "%Y-%m-%d %H:%M:%S"),
+                        "fecha_llegada":datetime.strftime(vuelo.fecha_llegada, "%Y-%m-%d %H:%M:%S"),
+                        "costo_base":vuelo.costo_base,
+                        "created":datetime.strftime(vuelo.created, "%Y-%m-%d %H:%M:%S")
+                    })
+                return result, 200
             else:
                 return{
                     "message":"Not Found"
