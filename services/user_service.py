@@ -18,6 +18,8 @@ class UserService:
         """        
         try:
             if all(key in payload for key in ("email","password", "name", "last_name", "status")):
+                if (self.get_user_by_email(payload["email"])):
+                    return f"Ya existe el email {payload['email']}"
                 result = User(
                     email=payload["email"],
                     password=payload["password"],
@@ -48,8 +50,24 @@ class UserService:
             Boolean: True
         """            
         try:
-            result = User.query.filterby(email=email, password=password).first()
+            result = User.query.filter_by(email=email, password=password).first()
         except Exception as e:
             print("mysql error(user_service/get_login()): "+str(e))
             db.session.rollback()
         return True if result is not None else False
+    
+    def get_user_by_email(self, email):
+        """consulta la tabla user por id
+
+        Args:
+            id (string): id del id_user
+
+        Returns:
+            Object: Avion
+        """            
+        try:
+            result = User.query.filter_by(email=email).first()
+        except Exception as e:
+            print("mysql error(user_service/get_user_by_email()): "+str(e))
+            db.session.rollback()
+        return result if result is not None else False

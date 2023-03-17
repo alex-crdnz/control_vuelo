@@ -40,7 +40,7 @@ class Login(Resource):
     @api.expect(login_user)
     def post(self):
         try:
-            data = request.json(login_user)
+            data = request.json
             response = user_service.get_login(data["email"], data["password"])
             if(response):
                 return{ "message":"Credenciales correctas"}, 200
@@ -49,6 +49,7 @@ class Login(Resource):
                     "body":"Not Found"
                 },404
         except Exception as e:
+            print(e)
             return{
                 "body":"Bad Request"
             },400
