@@ -4,7 +4,7 @@ sys.path.append("..")
 from context import db
 from db import Base
 
-class Vuelo(db.Model):
+class Vuelo(Base):
     __tablename__ = 'vuelo'
     id = db.Column(db.Integer, primary_key=True)
     id_avion = db.Column(db.Integer, db.ForeignKey('avion.id'), nullable=False)
