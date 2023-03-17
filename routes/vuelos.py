@@ -45,11 +45,12 @@ class Vuelo(Resource):
                 "message":"Bad Request"
             },400
         
-@ns.route("<id>", methods=["get",])
+@ns.route("<origen><destino>", methods=["get"])
 class GetVuelo(Resource):
-    def get(self, id):
+    def get(self, origen, destino):
         try:
-            response = vuelo_service.get_vuelo_by_id(id)
+            print(origen)
+            response = vuelo_service.get_vuelo_by_origen_destino(origen, origen)
             if(response):
                 return{
                     "id":response.id,
@@ -64,16 +65,16 @@ class GetVuelo(Resource):
                 }, 200
             else:
                 return{
-                    "body":"Not Found"
+                    "message":"Not Found"
                 },404
         except Exception as e:
             print(e)
             return{
-                "body":"Bad Request"
+                "message":"Bad Request"
             },400
 
 @ns.route("<id>", methods=["delete",])
-class GetVuelo(Resource):
+class DelVuelo(Resource):
     def delete(self, id):
         try:
             response = vuelo_service.del_vuelo_by_id(id)

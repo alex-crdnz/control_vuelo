@@ -82,3 +82,19 @@ class VueloService:
             print("mysql error(vuelo_service/delete_vuelo_by_id()): "+str(e))
             db.session.rollback()
         return result if result is not None else False
+    
+    def get_vuelo_by_origen_destino(self, origen, destino):
+        """consulta la tabla avion por id
+
+        Args:
+            vuelo (string): clave_vuelo del vuelo
+
+        Returns:
+            Object: Avion
+        """            
+        try:
+            result = Vuelo.query.filter_by(origen=origen, destino=destino).first()
+        except Exception as e:
+            print("mysql error(vuelo_service/get_vuelo_by_clave()): "+str(e))
+            db.session.rollback()
+        return result if result is not None else False
