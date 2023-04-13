@@ -28,7 +28,7 @@ avion_field = api.model("avion_field",{
     "configuracion_asientos":fields.Nested(configuracion_field_asientos),
 })
 
-@ns.route("", methods=["post"])
+@ns.route("", methods=["post", "get"])
 class Avion(Resource):
     @api.expect(avion_field)
     def post(self):
@@ -36,6 +36,27 @@ class Avion(Resource):
             return avion_service.add_avion(request.json), 200
         except Exception as e:
             return {
+                "message":"Bad Request"
+            },400
+    
+    def get(self):
+        try:
+            response = avion_service.get_avion()
+            if(response):
+                result = []
+                for vuelo in response:
+                    result.append({
+                        "id":vuelo.id,
+                        "modelo":vuelo.modelo,
+                    })
+                return result, 200
+            else:
+                return{
+                    "message":"Not Found"
+                },404
+        except Exception as e:
+            print(e)
+            return{
                 "message":"Bad Request"
             },400
         

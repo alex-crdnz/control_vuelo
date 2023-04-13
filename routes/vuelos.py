@@ -8,11 +8,14 @@ from services.vuelo_service import VueloService
 from datetime import datetime
 from services.asiento_service import AsientoService
 from services.avion_service import AvionService
+from services.destino_origen_service import DestinoOrigenService
 import json
 
 avion_service = AvionService()
 asiento_service = AsientoService()
 vuelo_service = VueloService()
+destino_origen_service = DestinoOrigenService()
+
 ns = api.namespace('vuelo', description='Operaciones para obtener datos de los vuelos')
 
 new_vuelo = api.model("new_vuelo",{
@@ -25,7 +28,7 @@ new_vuelo = api.model("new_vuelo",{
     "costo_base":fields.String(example="999.99")
 })
 
-@ns.route("", methods=["post"])
+@ns.route("", methods=["post", "get"])
 class Vuelo(Resource):
     @api.expect(new_vuelo)
     def post(self):
@@ -42,6 +45,34 @@ class Vuelo(Resource):
             }, 200
         except Exception as e:
             return {
+                "message":"Bad Request"
+            },400
+        
+    def get(self):
+        try:
+            response = vuelo_service.get_vuelo()
+            if(response):
+                result = []
+                for vuelo in response:
+                    result.append({
+                        "id":vuelo.id,
+                        "id_avion":vuelo.id_avion,
+                        "clave_vuelo":vuelo.clave_vuelo,
+                        "origen":vuelo.origen,
+                        "destino":vuelo.destino,
+                        "fecha_salida":datetime.strftime(vuelo.fecha_salida, "%Y-%m-%d %H:%M:%S"),
+                        "fecha_llegada":datetime.strftime(vuelo.fecha_llegada, "%Y-%m-%d %H:%M:%S"),
+                        "costo_base":vuelo.costo_base,
+                        "created":datetime.strftime(vuelo.created, "%Y-%m-%d %H:%M:%S")
+                    })
+                return result, 200
+            else:
+                return{
+                    "message":"Not Found"
+                },404
+        except Exception as e:
+            print(e)
+            return{
                 "message":"Bad Request"
             },400
         
@@ -75,7 +106,7 @@ class GetVuelo(Resource):
             return{
                 "message":"Bad Request"
             },400
-
+        
 @ns.route("<id>", methods=["delete",])
 class DelVuelo(Resource):
     def delete(self, id):
@@ -95,3 +126,9 @@ class DelVuelo(Resource):
             return{
                 "body":"Bad Request"
             },400
+        
+    @ns.route("/origenes_destinos", methods=["get"])
+    class OrigenDestino(Resource):
+        def get(self):
+            response = destino_origen_service.get_origen_destino()
+            return response
