@@ -49,3 +49,19 @@ class AvionService:
             print("mysql error(avion_service/get_avion_by_id()): "+str(e))
             db.session.rollback()
         return result if result is not None else False
+    
+    def get_avion(self):
+        """consulta la tabla avion por id
+
+        Args:
+            vuelo (string): clave_vuelo del vuelo
+
+        Returns:
+            Object: Avion
+        """            
+        try:
+            result = Avion.query.filter_by().all()
+        except Exception as e:
+            print("mysql error(vuelo_service/get_avion()): "+str(e))
+            db.session.rollback()
+        return result if result is not None else False
