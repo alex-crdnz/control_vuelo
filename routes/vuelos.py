@@ -33,7 +33,11 @@ class Vuelo(Resource):
     @api.expect(new_vuelo)
     def post(self):
         try:
-            vuelo = vuelo_service.add_vuelo(request.json)
+            payload = request.json
+            payload["fecha_salida"]+=":00"
+            payload["fecha_llegada"]+=":00"
+            return(payload)
+            vuelo = vuelo_service.add_vuelo(payload)
             if("message" in vuelo):
                 conf_asiento = avion_service.get_avion_by_id(vuelo["id_avion"]).configuracion_asientos
                 asiento_service.add_asiento_vuelo(json.loads(conf_asiento), vuelo["vuelo_id"])
