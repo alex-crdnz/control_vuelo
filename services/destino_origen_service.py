@@ -1,142 +1,40 @@
 import sys
 sys.path.append("..")
-
-VUELOS_LIST = {
-  "ACA": "Aeropuertos Chicago",
-  "CHI": "Aeropuertos Los Angeles",
-  "QLA": "Aguascalientes",
-  "AGU": "Albany",
-  "ALB": "Atlanta",
-  "ATL": "Austin",
-  "AUS": "Austin/San Antonio",
-  "QTX": "Bahía de San Francisco",
-  "QSB": "Baltimore",
-  "BWI": "Bogotá",
-  "BOG": "Boston",
-  "BOS": "Bradley",
-  "BDL": "Branson ",
-  "BKG": "Cancún",
-  "CUN": "Cd. México (AICM)",
-  "MEX": "Cd. México (AIFA)",
-  "NLU": "Cd. México (Todos los aeropuertos)",
-  "QMX": "Cedar Rapids",
-  "CID": "Charlotte",
-  "CLT": "Chetumal",
-  "CTM": "Chicago (Midway)",
-  "MDW": "Chicago (O Hare)",
-  "ORD": "Chihuahua",
-  "CUU": "Cincinnati",
-  "CVG": "Ciudad Juárez",
-  "CJS": "Ciudad Obregón",
-  "CEN": "Cleveland ",
-  "CLE": "Colima",
-  "CLQ": "Colorado Springs",
-  "COS": "Columbus",
-  "CMH": "Cozumel",
-  "CZM": "Culiacán",
-  "CUL": "Denver",
-  "DEN": "Des Moines ",
-  "DSM": "Detroit",
-  "DTW": "Dulles Washington",
-  "IAD": "Durango",
-  "DGO": "El Paso ",
-  "ELP": "Fargo ",
-  "FAR": "Filadelfia",
-  "PHL": "Fort Myers ",
-  "RSW": "Fresno",
-  "FAT": "Grand Rapids ",
-  "GRR": "Green Bay",
-  "GRB": "Greenville ",
-  "GSP": "Guadalajara",
-  "GDL": "Guatemala",
-  "GUA": "Hermosillo",
-  "HMO": "Houston",
-  "IAH": "Huatulco",
-  "HUX": "Huntsville ",
-  "HSV": "Illinois",
-  "BMI": "Indianapolis",
-  "IND": "Ixtapa / Zihuatanejo",
-  "ZIH": "Jacksonville ",
-  "JAX": "Kansas",
-  "MCI": "La Guardia ",
-  "LGA": "La Paz",
-  "LAP": "Las Vegas",
-  "LAS": "León",
-  "BJX": "Lima",
-  "LIM": "Little Rock ",
-  "LIT": "Long Island ",
-  "ISP": "Loreto",
-  "LTO": "Los Cabos",
-  "SJD": "Los Mochis",
-  "LMM": "Los Ángeles",
-  "LAX": "Mazatlán",
-  "MZT": "Memphis ",
-  "MEM": "Mexicali",
-  "MXL": "Miami",
-  "MIA": "Milwaukee",
-  "MKE": "Minneapolis",
-  "MSP": "Mobile Central",
-  "BFM": "Monterrey",
-  "MTY": "Morelia",
-  "MLM": "Mérida",
-  "MID": "Nashville ",
-  "BNA": "Norfolk ",
-  "ORF": "Nueva Orleans ",
-  "MSY": "Nueva York (JFK)",
-  "JFK": "Oakland/San Francisco",
-  "OAK": "Oaxaca",
-  "OAX": "Oklahoma City ",
-  "OKC": "Omaha ",
-  "OMA": "Ontario",
-  "ONT": "Orlando",
-  "MCO": "Pensacola ",
-  "PNS": "Phoenix",
-  "PHX": "Portland",
-  "PDX": "Puebla",
-  "PBC": "Puerto Escondido",
-  "PXM": "Puerto Vallarta / Riviera Nayarit",
-  "PVR": "Querétaro",
-  "QRO": "Raleigh ",
-  "RDU": "Reno",
-  "RNO": "Roatán",
-  "RTB": "Sacramento",
-  "SMF": "Salt Lake",
-  "SLC": "San Antonio",
-  "SAT": "San Francisco",
-  "SFO": "San José",
-  " California": "SJC",
-  "San José": " Costa Rica",
-  "SJO": "San Luis Potosí",
-  "SLP": "San Pedro Sula",
-  "SAP": "San Salvador",
-  "SAL": "Santa Ana ",
-  "SNA": "Seattle",
-  "SEA": "Spokane ",
-  "GEG": "St. Louis ",
-  "STL": "Syracuse ",
-  "SYR": "Tampa ",
-  "TPA": "Tapachula",
-  "TAP": "Tepic",
-  "TPQ": "Tijuana",
-  "TIJ": "Tijuana Cross-Border Xpress TJX",
-  "TJX": "Toluca",
-  "TLC": "Torreón",
-  "TRC": "Trenton ",
-  "TTN": "Tuxtla Gutiérrez",
-  "TGZ": "Uruapan",
-  "UPN": "Veracruz",
-  "VER": "Villahermosa",
-  "VSA": "Warwick ",
-  "PVD": "Washington DC",
-  "DCA": "Zacatecas"
-}
+from context import db
+from models.aeropuerto import Aeropuerto
 
 class DestinoOrigenService():
     def get_origen_destino(self):
-        result = []
-        for place in VUELOS_LIST:
-            vuelo={}
-            vuelo["values"]=place
-            vuelo["label"]=VUELOS_LIST[place]
-            result.append(vuelo)
-        return result
+      try:
+          result = Aeropuerto.query.filter_by().all()
+      except Exception as e:
+          print("mysql error(DestinoOrigenService/get_origen_destino()): "+str(e))
+          db.session.rollback()
+      return result if result is not None else False
+    
+    def add_origen_destino(self,clave, destino):
+      try:
+        result = Aeropuerto(
+          clave_destino=clave,
+          destino=destino
+        )
+        db.session.add(result)
+        db.session.commit()
+      except Exception as e:
+          print("mysql error(user_service/add_user()): "+str(e))
+          db.session.rollback()
+          return {"message":"Ha ocurrido un error al crear el nuevo destino."}
+      return {
+          "id":result.id,
+          "message":"nuevo destino creado correctamente"
+      }
+    
+    def del_destino_by_clave(self, clave):
+      try:
+          result = Aeropuerto.query.filter_by(clave_destino=clave).first()
+          db.session.delete(result)
+          db.session.commit()
+      except Exception as e:
+          print("mysql error(vuelo_service/delete_vuelo_by_id()): "+str(e))
+          db.session.rollback()
+      return result if result is not None else False

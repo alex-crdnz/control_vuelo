@@ -7,6 +7,7 @@ from datetime import datetime
 from services.avion_service import AvionService
 
 asiento_service = AsientoService()
+
 class VueloService:
     def add_vuelo(self, payload):
         """Agrega vuelo a la tabla vuelo
@@ -114,3 +115,4 @@ class VueloService:
             print("mysql error(vuelo_service/get_vuelo()): "+str(e))
             db.session.rollback()
         return result if result is not None else False
+    

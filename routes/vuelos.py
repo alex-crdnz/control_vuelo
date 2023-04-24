@@ -33,7 +33,10 @@ class Vuelo(Resource):
     @api.expect(new_vuelo)
     def post(self):
         try:
-            vuelo = vuelo_service.add_vuelo(request.json)
+            payload = request.json
+            payload["fecha_salida"]+=":00"
+            payload["fecha_llegada"]+=":00"
+            vuelo = vuelo_service.add_vuelo(payload)
             if("message" in vuelo):
                 conf_asiento = avion_service.get_avion_by_id(vuelo["id_avion"]).configuracion_asientos
                 asiento_service.add_asiento_vuelo(json.loads(conf_asiento), vuelo["vuelo_id"])
@@ -126,9 +129,79 @@ class DelVuelo(Resource):
             return{
                 "body":"Bad Request"
             },400
+
+@ns.route("/<modelo>", methods=["delete"])
+class DelVueloModelo(Resource):
+    def delete(self, modelo):
+        try:
+            vuelo = vuelo_service.get_vuelo_by_clave(modelo).id
+            response = vuelo_service.del_vuelo_by_id(vuelo)
+            if(response):
+                return{
+                    "id":modelo,
+                    "message":"vuelo eliminado correctamente"
+                }, 200
+            else:
+                return{
+                    "body":"Not Found"
+                },404
+        except Exception as e:
+            print(e)
+            return{
+                "body":"Bad Request"
+            },400
         
-    @ns.route("/origenes_destinos", methods=["get"])
-    class OrigenDestino(Resource):
-        def get(self):
+@ns.route("/origenes_destinos", methods=["get"])
+class OrigenDestino(Resource):
+    def get(self):
+        try:
             response = destino_origen_service.get_origen_destino()
-            return response
+            if(response):
+                result = []
+                for destino in response:
+                    result.append({
+                        "values":destino.clave_destino,
+                        "label":destino.destino,
+                    })
+                return result, 200
+            else:
+                return{
+                    "message":"Not Found"
+                },404
+        except Exception as e:
+            print(e)
+            return{
+                "message":"Bad Request"
+            },400
+            
+@ns.route("/crear/<clave>/<destino>", methods=["post"])
+class PostVueloDestino(Resource):
+    def post(self, clave, destino):
+        try:
+            response = destino_origen_service.add_origen_destino(clave, destino)
+            return response, 200
+        except Exception as e:
+            print(e)
+            return{
+                "message":"Bad Request"
+            },400
+        
+@ns.route("/destino/<clave>", methods=["delete"])
+class DelDestinoClave(Resource):
+    def delete(self, clave):
+        try:
+            response = destino_origen_service.del_destino_by_clave(clave)
+            if(response):
+                return{
+                    "id":clave,
+                    "message":"vuelo eliminado correctamente"
+                }, 200
+            else:
+                return{
+                    "body":"Not Found"
+                },404
+        except Exception as e:
+            print(e)
+            return{
+                "body":"Bad Request"
+            },400
