@@ -17,10 +17,13 @@ class VueloService:
 
         Returns:
             dict: diccionaro con el mensaje de la tabla y id del vuelo
-        """        
+        """          
         if all(key in payload for key in ("id_avion","clave_vuelo","origen","destino",
             "fecha_salida", "fecha_llegada", "costo_base")):
             try:
+                payload["fecha_salida"]+=":00"
+                payload["fecha_llegada"]+=":00"
+                print(payload)
                 if (self.get_vuelo_by_clave(payload["clave_vuelo"])):
                     return f"Ya existe la clave_vuelo {payload['clave_vuelo']}"
                 avion_id = AvionService.get_avion_by_id(self, payload["id_avion"])
