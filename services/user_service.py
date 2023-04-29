@@ -26,6 +26,7 @@ class UserService:
                     name=payload["name"],
                     last_name=payload["last_name"],
                     status=payload["status"],
+                    role="user",
                     created= datetime.today().strftime('%Y-%m-%d %H:%M:%S')
                 )
                 db.session.add(result)
@@ -54,7 +55,7 @@ class UserService:
         except Exception as e:
             print("mysql error(user_service/get_login()): "+str(e))
             db.session.rollback()
-        return True if result is not None else False
+        return result if result is not None else False
     
     def get_user_by_email(self, email):
         """consulta la tabla user por id

@@ -12,13 +12,15 @@ class User(db.Model):
     name = db.Column(db.String(70), nullable=False)
     last_name = db.Column(db.String(70), nullable=False)
     status = db.Column(db.Integer, nullable=False)
+    role = db.Column(db.String(70), nullable=False)
     created = db.Column(db.DateTime, nullable=False)
 
 
-    def __init__(self, email, password, name, last_name, status, created):
+    def __init__(self, email, password, name, last_name, status, role, created):
         self.email = email,
         self.password = password,
         self.name = name,
         self.last_name = last_name,
         self.status = status,
+        self.role = role,
         self.created = created

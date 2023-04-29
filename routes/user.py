@@ -43,7 +43,10 @@ class Login(Resource):
             data = request.json
             response = user_service.get_login(data["email"], data["password"])
             if(response):
-                return{ "message":"Credenciales correctas"}, 200
+                return{ 
+                    "message":"Credenciales correctas",
+                    "role":response.role   
+                    }, 200
             else:
                 return{
                     "body":"Not Found"
