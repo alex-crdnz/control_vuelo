@@ -87,7 +87,7 @@ class VueloService:
             db.session.rollback()
         return result if result is not None else False
     
-    def get_vuelo_by_origen_destino(self, origen, destino):
+    def get_vuelo_by_origen_destino(self, origen, destino, fecha_salida, fecha_llegada):
         """consulta la tabla avion por id
 
         Args:
@@ -97,7 +97,7 @@ class VueloService:
             Object: Avion
         """            
         try:
-            result = Vuelo.query.filter_by(origen=origen, destino=destino).all()
+            result = Vuelo.query.filter_by(origen=origen, destino=destino, fecha_salida=fecha_salida, fecha_llegada=fecha_llegada).all()
         except Exception as e:
             print("mysql error(vuelo_service/get_vuelo_by_clave()): "+str(e))
             db.session.rollback()

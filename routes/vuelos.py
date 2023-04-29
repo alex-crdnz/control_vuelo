@@ -79,12 +79,12 @@ class Vuelo(Resource):
                 "message":"Bad Request"
             },400
         
-@ns.route("/<origen>/<destino>", methods=["get"])
+@ns.route("/<origen>/<destino>/<fecha_salida>/<fecha_llegada>", methods=["get"])
 class GetVuelo(Resource):
-    def get(self, origen, destino):
+    def get(self, origen, destino, fecha_salida, fecha_llegada):
         try:
             print(origen)
-            response = vuelo_service.get_vuelo_by_origen_destino(origen, destino)
+            response = vuelo_service.get_vuelo_by_origen_destino(origen, destino, fecha_salida, fecha_llegada)
             if(response):
                 result = []
                 for vuelo in response:
