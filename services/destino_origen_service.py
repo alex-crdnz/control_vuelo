@@ -6,17 +6,19 @@ from models.aeropuerto import Aeropuerto
 class DestinoOrigenService():
     def get_origen_destino(self):
       try:
-          result = Aeropuerto.query.filter_by().all()
+          aer=None 
+          aer = Aeropuerto.query.filter_by().all()
       except Exception as e:
           print("mysql error(DestinoOrigenService/get_origen_destino()): "+str(e))
           db.session.rollback()
-      return result if result is not None else False
+      return aer if aer is not None else False
     
-    def add_origen_destino(self,clave, destino):
+    def add_origen_destino(self,clave, destino, tua):
       try:
         result = Aeropuerto(
           clave_destino=clave,
-          destino=destino
+          destino=destino,
+          tua=tua
         )
         db.session.add(result)
         db.session.commit()

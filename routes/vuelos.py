@@ -9,6 +9,8 @@ from datetime import datetime
 from services.asiento_service import AsientoService
 from services.avion_service import AvionService
 from services.destino_origen_service import DestinoOrigenService
+import random
+
 import json
 
 avion_service = AvionService()
@@ -34,8 +36,6 @@ class Vuelo(Resource):
     def post(self):
         try:
             payload = request.json
-            payload["fecha_salida"]+=":00"
-            payload["fecha_llegada"]+=":00"
             vuelo = vuelo_service.add_vuelo(payload)
             if("message" in vuelo):
                 conf_asiento = avion_service.get_avion_by_id(vuelo["id_avion"]).configuracion_asientos
@@ -83,22 +83,25 @@ class Vuelo(Resource):
 class GetVuelo(Resource):
     def get(self, origen, destino, fecha_salida, fecha_llegada):
         try:
-            print(origen)
             response = vuelo_service.get_vuelo_by_origen_destino(origen, destino, fecha_salida, fecha_llegada)
             if(response):
                 result = []
                 for vuelo in response:
-                    result.append({
-                        "id":vuelo.id,
-                        "id_avion":vuelo.id_avion,
-                        "clave_vuelo":vuelo.clave_vuelo,
-                        "origen":vuelo.origen,
-                        "destino":vuelo.destino,
-                        "fecha_salida":datetime.strftime(vuelo.fecha_salida, "%Y-%m-%d %H:%M:%S"),
-                        "fecha_llegada":datetime.strftime(vuelo.fecha_llegada, "%Y-%m-%d %H:%M:%S"),
-                        "costo_base":vuelo.costo_base,
-                        "created":datetime.strftime(vuelo.created, "%Y-%m-%d %H:%M:%S")
-                    })
+                    if vuelo:
+                        diferencia = datetime.strptime(str(datetime.today().strftime('%Y-%m-%d %H:%M:%S')), '%Y-%m-%d %H:%M:%S')-datetime.strptime(str(vuelo.fecha_salida) , '%Y-%m-%d %H:%M:%S')
+                        if (diferencia.days<=0):
+                            if(fecha_llegada in datetime.strftime(vuelo.fecha_llegada, "%Y-%m-%d") and
+                                fecha_salida in datetime.strftime(vuelo.fecha_salida, "%Y-%m-%d")):
+                                result.append(vuelo_service.response_vuelo(vuelo))
+                            if(fecha_llegada == 0 and
+                                fecha_salida == 0):
+                                result.append(vuelo_service.response_vuelo(vuelo))
+                            if(fecha_llegada == 0 and
+                                fecha_salida in datetime.strftime(vuelo.fecha_salida, "%Y-%m-%d")):
+                                result.append(vuelo_service.response_vuelo(vuelo))
+                            if(fecha_llegada in datetime.strftime(vuelo.fecha_llegada, "%Y-%m-%d") and
+                                fecha_salida == 0):
+                                result.append(vuelo_service.response_vuelo(vuelo))
                 return result, 200
             else:
                 return{
@@ -162,6 +165,7 @@ class OrigenDestino(Resource):
                     result.append({
                         "values":destino.clave_destino,
                         "label":destino.destino,
+                        "tua":destino.tua
                     })
                 return result, 200
             else:
@@ -174,11 +178,11 @@ class OrigenDestino(Resource):
                 "message":"Bad Request"
             },400
             
-@ns.route("/crear/<clave>/<destino>", methods=["post"])
+@ns.route("/crear/<clave>/<destino>/<tua>", methods=["post"])
 class PostVueloDestino(Resource):
-    def post(self, clave, destino):
+    def post(self, clave, destino, tua):
         try:
-            response = destino_origen_service.add_origen_destino(clave, destino)
+            response = destino_origen_service.add_origen_destino(clave, destino, tua)
             return response, 200
         except Exception as e:
             print(e)

@@ -22,6 +22,7 @@ class ReservacionService:
         if all(key in payload for key in ("id_user","clave_reservacion","status","costo_total",
             "configuracion")):
             try:
+                result = None
                 if (self.get_reservacion_by_clave(payload["clave_reservacion"])):
                     return f"Ya existe la clave_reservacion {payload['clave_reservacion']}"
                 # user_id = UserService.get_user_by_id(self, payload["id_user"])
@@ -38,8 +39,6 @@ class ReservacionService:
                         return {"message":"Ha ocurrido un error con la seleccion de asientos"}
                     asientos.append(asiento.clave_asiento)
                     vuelos.append(vuelo_id.id)
-                for update in range(len(asientos)):
-                    AsientoService.update_siento(self, vuelos[update],asientos[update], 1)
                 result = Reservacion(
                     id_user=int(payload["id_user"]),
                     clave_reservacion=payload["clave_reservacion"],
@@ -48,8 +47,12 @@ class ReservacionService:
                     configuracion=json.dumps({"configuracion":payload["configuracion"]}),
                     created= datetime.today().strftime('%Y-%m-%d %H:%M:%S')
                 )
+                for update in range(len(asientos)):
+                    print(asientos[update])
+                    AsientoService.update_siento(self, vuelos[update],asientos[update], 1, payload["clave_reservacion"])
                 db.session.add(result)
                 db.session.commit()
+                print(result)
             except Exception as e:
                 print("mysql error(reservacion_service/add_reservacion()): "+str(e))
                 db.session.rollback()
@@ -73,5 +76,21 @@ class ReservacionService:
             result = Reservacion.query.filter_by(clave_reservacion=clave_reservacion).first()
         except Exception as e:
             print("mysql error(reservacion_service/get_reservacion_by_clave()): "+str(e))
+            db.session.rollback()
+        return result if result is not None else False
+    
+    def get_reservacion_by_user(self, id_user):
+        """consulta la tabla reservacion por clave
+
+        Args:
+            vuelo (string): clave_reservacion de la reservacion
+
+        Returns:
+            Object: reservacion
+        """            
+        try:
+            result = Reservacion.query.filter_by(id_user=id_user).all()
+        except Exception as e:
+            print("mysql error(reservacion_service/get_reservacion_by_user()): "+str(e))
             db.session.rollback()
         return result if result is not None else False

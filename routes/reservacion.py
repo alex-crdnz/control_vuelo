@@ -76,3 +76,30 @@ class GetReservacion(Resource):
             return{
                 "body":"Bad Request"
             },400
+
+@ns.route("/user/<user>", methods=["get",])
+class GetReservacionUser(Resource):
+    def get(self, user):
+            try:
+                responses = reservacion_service.get_reservacion_by_user(user)
+                if(responses):
+                    result = []
+                    for response in responses:
+                        result.append({
+                            "body":{
+                                "id":response.id,
+                                "id_user":response.id_user,
+                                "clave_reservacion":response.clave_reservacion,
+                                "status":response.status,
+                                "costo_total":response.costo_total,
+                                "configuracion":json.loads(response.configuracion),
+                                "created":datetime.strftime(response.created, "%Y-%m-%d %H:%M:%S")
+                            }
+                        })
+                    return result, 200
+
+            except Exception as e:
+                print(e)
+                return{
+                    "body":"Bad Request"
+                },400

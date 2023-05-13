@@ -21,6 +21,7 @@ class VueloService:
         if all(key in payload for key in ("id_avion","clave_vuelo","origen","destino",
             "fecha_salida", "fecha_llegada", "costo_base")):
             try:
+                result=None
                 payload["fecha_salida"]+=":00"
                 payload["fecha_llegada"]+=":00"
                 print(payload)
@@ -97,7 +98,7 @@ class VueloService:
             Object: Avion
         """            
         try:
-            result = Vuelo.query.filter_by(origen=origen, destino=destino, fecha_salida=fecha_salida, fecha_llegada=fecha_llegada).all()
+            result = Vuelo.query.filter_by(origen=origen, destino=destino).all()
         except Exception as e:
             print("mysql error(vuelo_service/get_vuelo_by_clave()): "+str(e))
             db.session.rollback()
@@ -118,4 +119,17 @@ class VueloService:
             print("mysql error(vuelo_service/get_vuelo()): "+str(e))
             db.session.rollback()
         return result if result is not None else False
+    
+    def response_vuelo(self, vuelo):
+        return {
+            "id":vuelo.id,
+            "id_avion":vuelo.id_avion,
+            "clave_vuelo":vuelo.clave_vuelo,
+            "origen":vuelo.origen,
+            "destino":vuelo.destino,
+            "fecha_salida":datetime.strftime(vuelo.fecha_salida, "%Y-%m-%d %H:%M:%S"),
+            "fecha_llegada":datetime.strftime(vuelo.fecha_llegada, "%Y-%m-%d %H:%M:%S"),
+            "costo_base":vuelo.costo_base,
+            "created":datetime.strftime(vuelo.created, "%Y-%m-%d %H:%M:%S")
+        }
     

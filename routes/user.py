@@ -45,7 +45,8 @@ class Login(Resource):
             if(response):
                 return{ 
                     "message":"Credenciales correctas",
-                    "role":response.role   
+                    "role":response.role,
+                    "id": response.id  
                     }, 200
             else:
                 return{

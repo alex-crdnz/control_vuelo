@@ -51,13 +51,14 @@ class AsientoService:
             Object: reservacion
         """            
         try:
+            result = None
             result = Asiento.query.filter_by(id_vuelo=id_vuelo, clave_asiento=clave_asiento, disponible=disponible).first()
         except Exception as e:
             print("mysql error(asiento_service/get_asiento()): "+str(e))
             db.session.rollback()
         return result if result is not None else False
     
-    def update_siento(self, id_vuelo, clave_asiento, disponible):
+    def update_siento(self, id_vuelo, clave_asiento, disponible, clave_reservacion):
         """consulta la tabla reservacion por clave
 
         Args:
@@ -67,11 +68,15 @@ class AsientoService:
             Object: reservacion
         """            
         try:
+            result = None
             result = Asiento.query.filter_by(id_vuelo=id_vuelo, clave_asiento=clave_asiento, disponible=disponible).first()
             result.disponible=0
+            result.clave_reservacion=clave_reservacion
+            db.session.commit()
         except Exception as e:
             print("mysql error(asiento_service/update_siento()): "+str(e))
             db.session.rollback()
+        print(result)
         return result if result is not None else False
     
     def get_asiento_by_id(self, id_vuelo):

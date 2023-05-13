@@ -8,7 +8,7 @@ class Asiento(db.Model):
     __tablename__ = 'asiento'
     id = db.Column(db.Integer, primary_key=True)
     id_vuelo = db.Column(db.Integer, db.ForeignKey('vuelo.id'), nullable=False)
-    clave_reservacion = db.Column(db.Integer, db.ForeignKey('reservacion.id'), nullable=True)
+    clave_reservacion = db.Column(db.String(20), nullable=True)
     clave_asiento = db.Column(db.String(30), nullable=False)
     ventana = db.Column(db.String(30), nullable=False)
     pasillo = db.Column(db.String(30), nullable=False)
